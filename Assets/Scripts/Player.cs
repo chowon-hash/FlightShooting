@@ -76,14 +76,65 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        Move();
+        Move2();
+        //Move();
         Fire();
         Boom();
         Reload();
     }
 
+    void Move2()
+    {
+#if UNITY_EDITOR
+        if (Input.GetMouseButton(0))
+        {
+            float distanceToScreen = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
+            Vector3 posMove = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,
+                                                      Input.mousePosition.y, distanceToScreen));
+
+            float nextX = gameObject.transform.position.x + posMove.x;
+            float nextY = gameObject.transform.position.y + posMove.y;
+
+            //Debug.Log(nextX);
+
+            //Debug.Log("player: " + gameObject.transform.position.x);
+
+            if ((nextX <= 5.0 && nextX >= -5.0) ||
+                (nextY <= 5.0 && nextY >= -5.0))
+            {
+                gameObject.transform.position = new Vector3(posMove.x, posMove.y, 0);
+
+            } // Object Move Limited Android Screen
+        }
+#endif
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        if (Input.touchCount != 0)
+        {
+            Touch t = Input.GetTouch(0);
+
+            if (t.phase == TouchPhase.Moved)
+            {
+                float distanceToScreen = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
+                Vector3 posMove = Camera.main.ScreenToWorldPoint(
+                                     new Vector3(t.position.x, t.position.y, distanceToScreen));
+
+                float nextX = gameObject.transform.position.x + posMove.x;
+                float nextY = gameObject.transform.position.y + posMove.y;
+
+                if ((nextX <= 5.0 && nextX >= -5.0) ||
+                    (nextY <= 5.0 && nextY >= -5.0))
+                {
+                    gameObject.transform.position = new Vector3(posMove.x, posMove.y, 0);
+                }
+            }
+        }
+#endif
+    }
+
     void Move()
     {
+
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
